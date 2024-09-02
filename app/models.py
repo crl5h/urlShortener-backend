@@ -1,17 +1,20 @@
-from sqlalchemy import Column, Integer, String, DateTime
+from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.orm import relationship
 from db import Base
-import datetime
 
-class URLMapping(Base):
-    __tablename__ = "url_mapping"
-
-    short_id = Column(String, primary_key=True, index=True)
-    long_url = Column(String, index=True)
-
-class ClickLog(Base):
-    __tablename__ = "click_log"
+class URL(Base):
+    __tablename__ = "urls"
 
     id = Column(Integer, primary_key=True, index=True)
-    short_id = Column(String, index=True)
-    clicked_at = Column(DateTime, default=datetime.datetime.utcnow)
+    short_id = Column(String, unique=True, index=True)
+    long_url = Column(String, unique=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="urls")
+
+
+class ClickLog(Base):
+    __tablename__ = "click_logs"
+
+    id = Column(Integer, primary_key=True, index=True)
+    short_id = Column(String, ForeignKey("urls.short_id"))
+    clicked_at = Column(DateTime)
